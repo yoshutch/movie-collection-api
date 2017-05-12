@@ -1,6 +1,9 @@
 package hutchtech.movies;
 
 import hutchtech.movies.api.UserApi;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import static spark.Spark.*;
 
@@ -9,9 +12,14 @@ import static spark.Spark.*;
  * movie-collection-api
  */
 public class App {
+	private static final Logger LOG = LogManager.getLogger(App.class);
 
 	public static void main(String[] args) {
+		final int assignedPort = getAssignedPort();
+		LOG.debug("using port: " + assignedPort);
+		port(assignedPort);
 		setupRoutes();
+		LOG.debug("routes set");
 	}
 
 	private static void setupRoutes(){
@@ -28,5 +36,13 @@ public class App {
 			});
 		});
 
+	}
+
+	private static int getAssignedPort() {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		if (processBuilder.environment().get("PORT") != null) {
+			return Integer.parseInt(processBuilder.environment().get("PORT"));
+		}
+		return 4567;
 	}
 }
